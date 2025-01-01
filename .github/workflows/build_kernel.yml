@@ -3,41 +3,39 @@ name: Build Android Kernel
 on:
   push:
     branches:
-      - main  # أو يمكنك تحديد أي فرع ترغب في مراقبته، مثل master أو develop.
-  workflow_dispatch:  # يتيح لك تشغيل الـ workflow يدويًا عبر واجهة GitHub.
+      - master  # أو الفرع الذي تريد تفعيل الـ workflow عليه
 
 jobs:
   build:
-    runs-on: ubuntu-24.04  # اختيار بيئة العمل المناسبة (Ubuntu هنا)
+    runs-on: ubuntu-latest
 
     steps:
-      # 1. تحميل الكود المصدر للكيرنل من مستودعك
+      # 1. استنساخ مستودع الكود
       - name: Checkout kernel source
         uses: actions/checkout@v2
 
-      # 2. تحميل AnyKernel3 (اختياري، لكنه مهم إذا كنت تستخدم قالب AnyKernel3 لإنشاء ملف مضغوط قابل للتثبيت)
-      - name: Checkout AnyKernel3 template
+      # 2. استنساخ AnyKernel3
+      - name: Checkout zipper
         uses: actions/checkout@v2
         with:
           repository: lemniskett/AnyKernel3
           path: zipper
 
-      # 3. بناء الكيرنل
+      # 3. بناء النواة
       - name: Android kernel build
-  uses: lemniskett/android-kernel-actions@master
-  id: build
-  env:
-    NAME: Dark-Ages-Último
-  with:
-    arch: arm64
-    compiler: gcc/10
-    defconfig: kernel/arch/arm64/configs/vendor/y2q_chn_hkx_defconfig  # المسار الكامل لملف defconfig
-    image: Image.gz-dtb
+        uses: lemniskett/android-kernel-actions@master
+        id: build
+        env:
+          NAME: Dark-Ages-Último
+        with:
+          arch: arm64
+          compiler: gcc/10
+          defconfig: kernel/arch/arm64/configs/vendor/y2q_chn_hkx_defconfig  # المسار الكامل لملف defconfig
+          image: Image.gz-dtb
 
       # 4. نشر البناء
       - name: Release build
-        uses: ncipollo/release-action@v1  # استخدام الإجراء لنشر الملف الناتج
+        uses: ncipollo/release-action@v1
         with:
           artifacts: ${{ steps.build.outputs.outfile }}
           token: ${{ secrets.GITHUB_TOKEN }}  # استخدم الـ GitHub Token للمصادقة
-
