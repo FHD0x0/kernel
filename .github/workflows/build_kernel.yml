@@ -24,15 +24,15 @@ jobs:
 
       # 3. بناء الكيرنل
       - name: Android kernel build
-        uses: lemniskett/android-kernel-actions@master  # استخدم الإجراء الخاص بالكيرنل
-        id: build
-        env:
-          NAME: Dark-Ages-Último  # يمكنك تخصيص اسم البناء
-        with:
-          arch: arm64  # تحديد المعمارية (arm64 هنا)
-          compiler: gcc/10  # تحديد الأداة التي تستخدمها (GCC 10 هنا)
-          defconfig: vince_defconfig  # تأكد من أن هذا يتوافق مع إعدادات الكيرنل الخاص بك
-          image: Image.gz-dtb  # تحديد ملف الصورة النهائي الناتج عن عملية البناء
+  uses: lemniskett/android-kernel-actions@master
+  id: build
+  env:
+    NAME: Dark-Ages-Último
+  with:
+    arch: arm64
+    compiler: gcc/10
+    defconfig: kernel/arch/arm64/configs/vendor/y2q_chn_hkx_defconfig  # المسار الكامل لملف defconfig
+    image: Image.gz-dtb
 
       # 4. نشر البناء
       - name: Release build
