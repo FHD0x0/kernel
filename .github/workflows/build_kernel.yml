@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04.1
 
     steps:
       # 1. استنساخ مستودع الكود
@@ -28,7 +28,7 @@ jobs:
         uses: lemniskett/android-kernel-actions@master
         id: build
         env:
-          NAME: FahadKernel  # اسم الإصدار
+          NAME: Dark-Ages-Último  # اسم الإصدار
         with:
           arch: arm64  # تحديد المعمارية
           compiler: gcc/10  # اختيار الـ toolchain المستخدم (gcc/10)
