@@ -28,7 +28,7 @@ jobs:
         uses: lemniskett/android-kernel-actions@master
         id: build
         env:
-          NAME: Dark-Ages-Último  # اسم الإصدار
+          NAME: FahadKernel  # اسم الإصدار
         with:
           arch: arm64  # تحديد المعمارية
           compiler: gcc/10  # اختيار الـ toolchain المستخدم (gcc/10)
