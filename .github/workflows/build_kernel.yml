@@ -1,0 +1,44 @@
+name: Build Android Kernel
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: [ "main" ]    # Triggers the workflow on push to "main" branch
+  workflow_dispatch:          # Allows manual trigger from the GitHub Actions tab
+
+jobs:
+  build:
+    runs-on: ubuntu-latest   # Specifies the runner (Ubuntu in this case)
+
+    steps:
+      # 1. Checkout the kernel source code
+      - name: Checkout kernel source
+        uses: actions/checkout@v2
+        with:
+          repository: your_username/your_repository_name    # Replace with your repository details
+
+      # 2. Checkout AnyKernel3 (for creating flashable zip files)
+      - name: Checkout AnyKernel3
+        uses: actions/checkout@v2
+        with:
+          repository: lemniskett/AnyKernel3
+          path: zipper
+
+      # 3. Build the Android kernel using the Android Kernel Actions
+      - name: Build Android kernel
+        uses: lemniskett/android-kernel-actions@master
+        id: build
+        env:
+          NAME: "Custom-Kernel"   # Set the release name for the kernel
+        with:
+          arch: arm64           # Specify the target architecture (e.g., arm64)
+          compiler: gcc/10      # Specify the toolchain to use (e.g., GCC version 10)
+          defconfig: vince_defconfig  # Specify the defconfig (e.g., vince_defconfig for a specific device)
+          image: Image.gz-dtb   # Output image name (e.g., Image.gz-dtb or Image-dtb)
+
+      # 4. Release the build using GitHub Release
+      - name: Release build
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ${{ steps.build.outputs.outfile }}  # Path to the output kernel image
+          token: ${{ secrets.GITHUB_TOKEN }}  # Use GitHub token for API access
