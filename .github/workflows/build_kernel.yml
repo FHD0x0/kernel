@@ -1,53 +1,43 @@
 name: Build Android Kernel
 
-# Controls when the workflow will run
 on:
   push:
-    branches: [ "main" ]  # Triggers on push to the "main" branch
-  workflow_dispatch:      # Allows manual trigger from the GitHub Actions tab
+    branches:
+      - main  # أو يمكنك تحديد أي فرع ترغب في مراقبته، مثل master أو develop.
+  workflow_dispatch:  # يتيح لك تشغيل الـ workflow يدويًا عبر واجهة GitHub.
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Specifies Ubuntu as the runner
+    runs-on: ubuntu-latest  # اختيار بيئة العمل المناسبة (Ubuntu هنا)
 
     steps:
-      # 1. Checkout the kernel source code
+      # 1. تحميل الكود المصدر للكيرنل من مستودعك
       - name: Checkout kernel source
         uses: actions/checkout@v2
-        with:
-          repository: your_username/your_kernel_repo  # Replace with your repository details
 
-      # 2. Set up toolchain (download and install)
-      - name: Set up toolchain
-        run: |
-          # Download toolchain from Android Git server or another source
-          wget https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9.tar.gz
-          tar -xvf aarch64-linux-android-4.9.tar.gz
-          export CROSS_COMPILE=$PWD/aarch64-linux-android-4.9/bin/aarch64-linux-android-
-          export CLANG_TRIPLE=aarch64-linux-gnu-
-
-      # 3. Checkout AnyKernel3 (for creating flashable zip files)
-      - name: Checkout AnyKernel3
+      # 2. تحميل AnyKernel3 (اختياري، لكنه مهم إذا كنت تستخدم قالب AnyKernel3 لإنشاء ملف مضغوط قابل للتثبيت)
+      - name: Checkout AnyKernel3 template
         uses: actions/checkout@v2
         with:
           repository: lemniskett/AnyKernel3
           path: zipper
 
-      # 4. Build the Android kernel
-      - name: Build Android kernel
-        uses: lemniskett/android-kernel-actions@master
+      # 3. بناء الكيرنل
+      - name: Android kernel build
+        uses: lemniskett/android-kernel-actions@master  # استخدم الإجراء الخاص بالكيرنل
         id: build
         env:
-          NAME: "Custom-Kernel"   # Set the release name for the kernel
+          NAME: Dark-Ages-Último  # يمكنك تخصيص اسم البناء
         with:
-          arch: arm64            # Specify the target architecture
-          compiler: gcc/10       # Specify toolchain to use
-          defconfig: vendor/y2q_chn_hkx_defconfig  # Use your device-specific defconfig
-          image: Image.gz-dtb    # Output image name (e.g., Image.gz-dtb or Image-dtb)
+          arch: arm64  # تحديد المعمارية (arm64 هنا)
+          compiler: gcc/10  # تحديد الأداة التي تستخدمها (GCC 10 هنا)
+          defconfig: vince_defconfig  # تأكد من أن هذا يتوافق مع إعدادات الكيرنل الخاص بك
+          image: Image.gz-dtb  # تحديد ملف الصورة النهائي الناتج عن عملية البناء
 
-      # 5. Release the build using GitHub Release
+      # 4. نشر البناء
       - name: Release build
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1  # استخدام الإجراء لنشر الملف الناتج
         with:
-          artifacts: ${{ steps.build.outputs.outfile }}  # Path to the final build file
-          token: ${{ secrets.GITHUB_TOKEN }}  # Use GitHub token for API access
+          artifacts: ${{ steps.build.outputs.outfile }}
+          token: ${{ secrets.GITHUB_TOKEN }}  # استخدم الـ GitHub Token للمصادقة
+
