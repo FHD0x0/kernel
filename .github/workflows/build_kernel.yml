@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # اختيار بيئة العمل المناسبة (Ubuntu هنا)
+    runs-on: ubuntu-24.04  # اختيار بيئة العمل المناسبة (Ubuntu هنا)
 
     steps:
       # 1. تحميل الكود المصدر للكيرنل من مستودعك
